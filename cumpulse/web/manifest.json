@@ -1,6 +1,6 @@
 {
-    "name": "compulse",
-    "short_name": "compulse",
+    "name": "cumpulse",
+    "short_name": "cumpulse",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

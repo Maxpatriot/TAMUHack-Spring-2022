@@ -1,4 +1,4 @@
-name: compulse
+name: cumpulse
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -35,9 +35,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   image_picker: ^0.8.4+5
-  video_player: ^2.2.16
-  path_provider: ^2.0.8
-  camera: ^0.9.4+9
 
 dev_dependencies:
   flutter_test:
