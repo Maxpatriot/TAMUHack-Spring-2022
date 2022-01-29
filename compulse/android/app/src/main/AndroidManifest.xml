@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.compulse">
+    package="com.example.cumpulse">
    <application
-        android:label="compulse"
+        android:label="cumpulse"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
