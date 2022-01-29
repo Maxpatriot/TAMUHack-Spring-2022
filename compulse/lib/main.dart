@@ -1,4 +1,7 @@
+// import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,18 +51,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  // int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  String username = "";
+
+  // void _incrementCounter() {
+  //   setState(() {
+  //     // This call to setState tells the Flutter framework that something has
+  //     // changed in this State, which causes it to rerun the build method below
+  //     // so that the display can reflect the updated values. If we changed
+  //     // _counter without calling setState(), then the build method would not be
+  //     // called again, and so nothing would appear to happen.
+  //     _counter++;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -95,21 +100,55 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+            // const Text(
+            //   'You have pushed the button this many times:',
+            // ),
             Text(
-              '$_counter',
+              getWelcomeText(),
               style: Theme.of(context).textTheme.headline4,
+            ),
+            OutlinedButton(
+              onPressed: () {
+                _awaitAcess(context, true);
+              },
+              child: const Text('Login'),
+            ),
+            OutlinedButton(
+              onPressed: () {
+                _awaitAcess(context, false);
+              },
+              child: const Text('Sign Up'),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _incrementCounter,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.add),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  void _awaitAcess(BuildContext context, bool isLogin) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => isLogin ? LoginRoute() : SignupRoute(),
+      ),
+    );
+    if (result != null) {
+      setState(() {
+        username = result;
+      });
+    }
+  }
+
+  String getWelcomeText() {
+    if (username == "") {
+      return 'Welcome!';
+    } else {
+      return 'Welcome, $username!';
+    }
   }
 }
