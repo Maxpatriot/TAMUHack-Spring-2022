@@ -57,7 +57,7 @@ class _CheckUpAppState extends State<CheckUpApp> {
                   backgroundColor: Color(SECONDARY_COLOR)),
               home: Scaffold(
                 appBar: AppBar(
-                  title: const Text("CheckUp"),
+                  title: const Text("Check-Up"),
                 ),
                 body: ReorderableListView(
                     children: items,
@@ -92,7 +92,7 @@ class _CheckUpAppState extends State<CheckUpApp> {
           return MaterialApp(
               home: Scaffold(
             appBar: AppBar(
-              title: Text("CheckUp"),
+              title: Text("Check-Up"),
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () => {},
