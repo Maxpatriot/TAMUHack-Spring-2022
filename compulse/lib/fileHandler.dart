@@ -1,11 +1,14 @@
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-Future<List<int>> read() async {
+Future read() async {
   final directory = await getApplicationDocumentsDirectory();
   final file = File('${directory.path}/reminder_info.txt');
-  List<int> listItems = await file.readAsBytes();
-  return listItems;
+  if (await file.exists()) {
+    List<int> listItems = await file.readAsBytes();
+    return listItems;
+  }
+  return <int>[];
 }
 
 write(List<int> l) async {

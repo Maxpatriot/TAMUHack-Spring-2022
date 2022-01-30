@@ -16,67 +16,78 @@ class CheckUpApp extends StatefulWidget {
 }
 
 class _CheckUpAppState extends State<CheckUpApp> {
+  late List<int> _items = <int>[];
+
+  _addItem(int i) {
+    setState(() {
+      _items.add(i);
+      print(_items);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(primaryColor: Color(PRIMARY_COLOR), backgroundColor: Color(SECONDARY_COLOR)),
+        theme: ThemeData(
+            primaryColor: Color(PRIMARY_COLOR),
+            backgroundColor: Color(SECONDARY_COLOR)),
         home: Scaffold(
-            appBar: AppBar(
-              title: const Text("CheckUp"),
-            ),
-            body: FutureBuilder<List<int>>(
-                future: read(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-                  if (snapshot.hasData) {
-                    final List<int> _items = snapshot.data!.toList();
-                    return ReorderableListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      children: <Widget>[
-                        for (int index = 0;
-                            index < _items.length;
-                            index++)
-                          ListTile(
-                            key: Key('$index'),
-                            title: Text('Item ${_items[index]}'),
-                          ),
-                      ],
-                      onReorder: (int oldIndex, int newIndex) {
-                        setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
-                          final int item = _items.removeAt(oldIndex);
-                          _items.insert(newIndex, item);
-                        });
-                        write(_items);
-                      },
-                    );
-                  } else {
-                    final List<int> _items = List<int>.generate(50, (int index) => index);
-                    return ReorderableListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      children: <Widget>[
-                        for (int index = 0;
-                            index < _items.length;
-                            index++)
-                          ListTile(
-                            key: Key('$index'),
-                            title: Text('Item ${_items[index]}'),
-                          ),
-                      ],
-                      onReorder: (int oldIndex, int newIndex) {
-                        setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
-                          final int item = _items.removeAt(oldIndex);
-                          _items.insert(newIndex, item);
-                        });
-                        write(_items);
-                      },
-                    );
-                  }
-                })));
+          appBar: AppBar(
+            title: const Text("CheckUp"),
+          ),
+          body: FutureBuilder<dynamic>(
+              future: read(),
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                if (snapshot.hasData) {
+                  _items = snapshot.data!.toList();
+                  return ReorderableListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    children: <Widget>[
+                      for (int index = 0; index < _items.length; index++)
+                        ExpansionTile(
+                          key: Key('$index'),
+                          title: Text('Item ${_items[index]}'),
+                        ),
+                    ],
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        if (oldIndex < newIndex) {
+                          newIndex -= 1;
+                        }
+                        final int item = _items.removeAt(oldIndex);
+                        _items.insert(newIndex, item);
+                      });
+                      write(_items);
+                    },
+                  );
+                } else {
+                  return ReorderableListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    children: <Widget>[
+                      for (int index = 0; index < _items.length; index++)
+                        ListTile(
+                          key: Key('$index'),
+                          title: Text('Item ${_items[index]}'),
+                        ),
+                    ],
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        if (oldIndex < newIndex) {
+                          newIndex -= 1;
+                        }
+                        final int item = _items.removeAt(oldIndex);
+                        _items.insert(newIndex, item);
+                      });
+                      write(_items);
+                    },
+                  );
+                }
+              }),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _addItem(1),
+            tooltip: "Add Item",
+            child: const Icon(Icons.add),
+          ),
+        ));
   }
 }
