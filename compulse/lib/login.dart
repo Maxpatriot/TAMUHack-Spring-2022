@@ -10,7 +10,7 @@ abstract class AccessRoute extends StatelessWidget {
     Navigator.pop(context, usernameController.text);
   }
 
-  String? isValidFormField(value) {
+  String? isNotEmpty(value) {
     if (value.isEmpty) {
       return 'Please enter a value';
     }
@@ -44,7 +44,7 @@ class SignupRoute extends AccessRoute {
                           ),
                           autocorrect: false,
                           autofocus: true,
-                          validator: isValidFormField,
+                          validator: isNotEmpty,
                         )),
                     ElevatedButton(
                       onPressed: () {
@@ -85,7 +85,7 @@ class LoginRoute extends AccessRoute {
                             ),
                             autocorrect: false,
                             autofocus: true,
-                            validator: isValidFormField)),
+                            validator: isNotEmpty)),
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
