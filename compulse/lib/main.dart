@@ -1,12 +1,38 @@
 import 'package:flutter/material.dart';
 import 'fileHandler.dart';
 import 'statusTile.dart';
+import 'newItemPage.dart';
 
 const PRIMARY_COLOR = 0xFF2F3B48;
 const SECONDARY_COLOR = 0xFFFDF5EB;
 
 void main(List<String> args) {
-  runApp(CheckUpApp());
+  runApp(CheckUpApp1());
+}
+
+class CheckUpApp1 extends StatelessWidget {
+  const CheckUpApp1({Key? key}) : super(key: key);
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+      ),
+      home: const CheckUpApp(),
+    );
+  }
 }
 
 class CheckUpApp extends StatefulWidget {
@@ -23,6 +49,13 @@ class _CheckUpAppState extends State<CheckUpApp> {
   void removeItemList(StatusTile t) async {
     List<StatusTile> s = await _listFuture;
     s.remove(t);
+    write(s);
+    refreshList();
+  }
+
+  void addItemList(StatusTile t) async {
+    List<StatusTile> s = await _listFuture;
+    s.add(t);
     write(s);
     refreshList();
   }
@@ -70,19 +103,7 @@ class _CheckUpAppState extends State<CheckUpApp> {
                       write(items);
                     }),
                 floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    items.add(StatusTile(
-                      isDone: false,
-                      key: Key("Lock Car $i"),
-                      taskText: "Lock Car $i",
-                      videoPath: "",
-                      timeDone: "You have not done this yet",
-                      delete: removeItemList,
-                    ));
-                    i++;
-                    write(items);
-                    refreshList();
-                  },
+                  onPressed: () {_awaitAcess(context);},
                   tooltip: "Add Item",
                   child: const Icon(Icons.add),
                 ),
@@ -95,11 +116,28 @@ class _CheckUpAppState extends State<CheckUpApp> {
               title: Text("Check-Up"),
             ),
             floatingActionButton: FloatingActionButton(
-              onPressed: () => {},
+              onPressed: () {_awaitAcess(context);},
               tooltip: "Add Item",
               child: const Icon(Icons.add),
             ),
           ));
         });
   }
+
+  void _awaitAcess(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddListItemRoute(),
+      ),
+    );
+    if (result != null) {
+
+      setState(() {
+        addItemList(StatusTile(taskText: result, isDone: false, key: Key(result), timeDone: "Not done yet", videoPath: "", delete: removeItemList,));
+      });
+    }
+  }
 }
+
+
