@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'fileHandler.dart';
+import 'statusTile.dart';
 
 const PRIMARY_COLOR = 0xFF2F3B48;
 const SECONDARY_COLOR = 0xFFFDF5EB;
@@ -16,7 +17,8 @@ class CheckUpApp extends StatefulWidget {
 }
 
 class _CheckUpAppState extends State<CheckUpApp> {
-  late Future<List<int>> _listFuture;
+  int i = 0;
+  late Future<List<Map<String, String>>> _listFuture;
 
   void refreshList() {
     setState(() {
@@ -30,15 +32,15 @@ class _CheckUpAppState extends State<CheckUpApp> {
     _listFuture = updateList();
   }
 
-  Future<List<int>> updateList() async {
+  Future<List<Map<String, String>>> updateList() async {
     return await read();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<int>>(
+    return FutureBuilder<List<Map<String, String>>>(
         future: _listFuture,
-        builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<Map<String, String>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return MaterialApp(
                 home: Scaffold(
@@ -52,7 +54,7 @@ class _CheckUpAppState extends State<CheckUpApp> {
               ),
             ));
           }
-          final List<int> items = snapshot.data!.toList();
+          final List<Map<String, String>> items = snapshot.data!.toList();
           return MaterialApp(
             theme: ThemeData(
                 primaryColor: Color(PRIMARY_COLOR),
@@ -61,18 +63,26 @@ class _CheckUpAppState extends State<CheckUpApp> {
               appBar: AppBar(
                 title: const Text("CheckUp"),
               ),
-              body: ListView.builder(
+              body: ReorderableListView.builder(
                 itemCount: items.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    key: Key('$index'),
-                    title: Text("List $index"),
-                  );
+                  //return ListTile(key: Key(items[index]["taskText"]!), title: Text(items[index]["taskText"]!),);
+                  return StatusTile(key: Key(items[index]["taskText"]!), taskText: items[index]["taskText"]!, isDone: items[index]["isDone"]!.toLowerCase() == 'true', timeDone: items[index]["timeDone"]!, videoPath: items[index]["video"]!, update: refreshList,);
+
                 },
+                onReorder: (int oldIndex, int newIndex) {
+                    if (oldIndex < newIndex) {
+                      newIndex -= 1;
+                    }
+                    final Map<String, String> item = items.removeAt(oldIndex);
+                    items.insert(newIndex, item);
+                    write(items);
+                }
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  items.add(1);
+                  items.add({"taskText": "Lock Car $i", "timeDone": "You have not done this", "isDone": "false", "video": ""});
+                  i++;
                   write(items);
                   refreshList();
                 },

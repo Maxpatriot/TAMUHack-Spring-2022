@@ -1,18 +1,27 @@
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'dart:convert';
 
-Future<List<int>> read() async {
+Future<List<Map<String, String>>> read() async {
   final directory = await getApplicationDocumentsDirectory();
-  final file = File('${directory.path}/reminder_info.txt');
+  final file = File('${directory.path}/reminder_tile.txt');
   if (await file.exists()) {
-    List<int> listItems = await file.readAsBytes();
-    return listItems;
+    List<Map<String, String>> list = <Map<String, String>>[];
+    file.readAsLines().then((lines) =>
+      lines.forEach((l) => list.add(Map<String, String>.from(json.decode(l))))
+    );
+    print(list);
+    return list;
   }
-  return <int>[];
+  return <Map<String, String>>[];
 }
 
-write(List<int> l) async {
+write(List<Map<String, String>> l) async {
   final directory = await getApplicationDocumentsDirectory();
-  final file = File('${directory.path}/reminder_info.txt');
-  await file.writeAsBytes(l);
+  final file = File('${directory.path}/reminder_tile.txt');
+  String s = "";
+  for (int i = 0; i < l.length; i++) {
+    s += json.encode(l[i]) + "\n";
+  }
+  await file.writeAsString(s);
 }
