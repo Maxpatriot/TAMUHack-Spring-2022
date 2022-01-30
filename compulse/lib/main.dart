@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'fileHandler.dart';
 import 'statusTile.dart';
 import 'newItemPage.dart';
+import 'login.dart';
+import 'serviceCalls.dart';
 
 const PRIMARY_COLOR = 0xFF2F3B48;
 const SECONDARY_COLOR = 0xFFFDF5EB;
@@ -11,31 +13,23 @@ void main(List<String> args) {
 }
 
 class CheckUpApp1 extends StatelessWidget {
+  
+
   const CheckUpApp1({Key? key}) : super(key: key);
+  
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+      title: 'Check-Up',
       home: const CheckUpApp(),
     );
   }
 }
 
 class CheckUpApp extends StatefulWidget {
+  
   const CheckUpApp({Key? key}) : super(key: key);
 
   @override
@@ -43,13 +37,15 @@ class CheckUpApp extends StatefulWidget {
 }
 
 class _CheckUpAppState extends State<CheckUpApp> {
-  int i = 0;
+  String username = "";
   late Future<List<StatusTile>> _listFuture;
+  
 
   void removeItemList(StatusTile t) async {
     List<StatusTile> s = await _listFuture;
     s.remove(t);
     write(s);
+    postUpdate(username, s);
     refreshList();
   }
 
@@ -57,6 +53,7 @@ class _CheckUpAppState extends State<CheckUpApp> {
     List<StatusTile> s = await _listFuture;
     s.add(t);
     write(s);
+    postUpdate(username, s);
     refreshList();
   }
 
@@ -91,6 +88,7 @@ class _CheckUpAppState extends State<CheckUpApp> {
               home: Scaffold(
                 appBar: AppBar(
                   title: const Text("Check-Up"),
+                  actions: [TextButton(child: Icon(Icons.person), onPressed: () {_login(context);},)],
                 ),
                 body: ReorderableListView(
                     children: items,
@@ -101,6 +99,7 @@ class _CheckUpAppState extends State<CheckUpApp> {
                       final StatusTile item = items.removeAt(oldIndex);
                       items.insert(newIndex, item);
                       write(items);
+                      postUpdate(username, items);
                     }),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {_awaitAcess(context);},
@@ -124,6 +123,24 @@ class _CheckUpAppState extends State<CheckUpApp> {
         });
   }
 
+  void _login(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginRoute(),
+      ),
+    );
+    username = result[0];
+    if (result[1] == false) {
+      postInsert(result[0], await _listFuture);
+    } else {
+      _listFuture = getSelect(result[0], removeItemList);
+      List<StatusTile> s = await _listFuture;
+      write(s);
+      refreshList();
+    }
+  }
+
   void _awaitAcess(BuildContext context) async {
     final result = await Navigator.push(
       context,
@@ -132,11 +149,10 @@ class _CheckUpAppState extends State<CheckUpApp> {
       ),
     );
     if (result != null) {
-
       setState(() {
         addItemList(StatusTile(taskText: result, isDone: false, key: Key(result), timeDone: "Not done yet", videoPath: "", delete: removeItemList,));
       });
-    }
+  }
   }
 }
 
