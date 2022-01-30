@@ -4,9 +4,11 @@ import 'statusTile.dart';
 import 'newItemPage.dart';
 import 'login.dart';
 import 'serviceCalls.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const PRIMARY_COLOR = 0xFF2F3B48;
 const SECONDARY_COLOR = 0xFFFDF5EB;
+const BUTTON_GREEN = 0xFF00C475;
 
 void main(List<String> args) {
   runApp(CheckUpApp1());
@@ -86,9 +88,11 @@ class _CheckUpAppState extends State<CheckUpApp> {
                   primaryColor: Color(PRIMARY_COLOR),
                   backgroundColor: Color(SECONDARY_COLOR)),
               home: Scaffold(
+                backgroundColor: Color(PRIMARY_COLOR),
                 appBar: AppBar(
-                  title: const Text("Check-Up"),
-                  actions: [TextButton(child: Icon(Icons.person), onPressed: () {_login(context);},)],
+                  backgroundColor: Color(PRIMARY_COLOR),
+                  title: const Image(image: AssetImage('assets/banner.png')),
+                  actions: [TextButton(child: Icon(Icons.person, color: Color(BUTTON_GREEN),), onPressed: () {_login(context);},)],
                 ),
                 body: ReorderableListView(
                     children: items,
@@ -102,6 +106,8 @@ class _CheckUpAppState extends State<CheckUpApp> {
                       postUpdate(username, items);
                     }),
                 floatingActionButton: FloatingActionButton(
+                  foregroundColor: Color(SECONDARY_COLOR),
+                  backgroundColor: Color(BUTTON_GREEN),
                   onPressed: () {_awaitAcess(context);},
                   tooltip: "Add Item",
                   child: const Icon(Icons.add),
@@ -112,9 +118,12 @@ class _CheckUpAppState extends State<CheckUpApp> {
           return MaterialApp(
               home: Scaffold(
             appBar: AppBar(
-              title: Text("Check-Up"),
+              backgroundColor: Color(PRIMARY_COLOR),
+              title: const Image(image: AssetImage('assets/banner.png')),
             ),
             floatingActionButton: FloatingActionButton(
+              foregroundColor: Color(SECONDARY_COLOR),
+              backgroundColor: Color(BUTTON_GREEN),
               onPressed: () {_awaitAcess(context);},
               tooltip: "Add Item",
               child: const Icon(Icons.add),

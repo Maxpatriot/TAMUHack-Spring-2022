@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+const PRIMARY_COLOR = 0xFF2F3B48;
+const SECONDARY_COLOR = 0xFFFDF5EB;
+const BUTTON_GREEN = 0xFF00C475;
+
 class AddListItemRoute extends StatelessWidget {
   AddListItemRoute({Key? key}) : super(key: key);
 
@@ -20,8 +24,11 @@ class AddListItemRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(PRIMARY_COLOR),
       appBar: AppBar(
-        title: const Text('Add New Task'),
+        backgroundColor: Color(PRIMARY_COLOR),
+        iconTheme: IconThemeData(color: Color(SECONDARY_COLOR)),
+        title: const Text('Add New Task', style: TextStyle(color: Color(SECONDARY_COLOR)),),
       ),
       body: Center(
           child: Form(
@@ -33,9 +40,24 @@ class AddListItemRoute extends StatelessWidget {
                         width: 300.0,
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: TextFormField(
+                          style: TextStyle(color: Color(PRIMARY_COLOR)),
                           controller: taskTitleController,
                           decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
+                            fillColor: Color(SECONDARY_COLOR),
+                            filled: true,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(BUTTON_GREEN)),
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(BUTTON_GREEN)),
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(BUTTON_GREEN)),
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                            
                             hintText: 'Enter task description',
                           ),
                           autocorrect: false,
@@ -43,6 +65,7 @@ class AddListItemRoute extends StatelessWidget {
                           validator: isNotEmpty,
                         )),
                     ElevatedButton(
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           _sendDataBack(context);

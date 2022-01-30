@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+const PRIMARY_COLOR = 0xFF2F3B48;
+const SECONDARY_COLOR = 0xFFFDF5EB;
+const BUTTON_GREEN = 0xFF00C475;
 
 class LoginRoute extends StatelessWidget {
   LoginRoute({Key? key}) : super(key: key);
@@ -22,8 +25,11 @@ class LoginRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(PRIMARY_COLOR),
         appBar: AppBar(
-          title: const Text('Log In'),
+          backgroundColor: Color(PRIMARY_COLOR),
+          iconTheme: IconThemeData(color: Color(SECONDARY_COLOR)),
+          title: const Text('Log In', style: TextStyle(color: Color(SECONDARY_COLOR)),),
         ),
         body: Center(
           child: Form(
@@ -37,13 +43,27 @@ class LoginRoute extends StatelessWidget {
                         child: TextFormField(
                             controller: usernameController,
                             decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
+                              fillColor: Color(SECONDARY_COLOR),
+                            filled: true,
+                              enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(BUTTON_GREEN)),
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(BUTTON_GREEN)),
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(BUTTON_GREEN)),
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
                               hintText: 'Enter your username',
                             ),
                             autocorrect: false,
                             autofocus: true,
                             validator: isNotEmpty)),
                     ElevatedButton(
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           _sendUsernameBack(context, true);
@@ -52,6 +72,7 @@ class LoginRoute extends StatelessWidget {
                       child: const Text("Log In"),
                     ), 
                     ElevatedButton(
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           _sendUsernameBack(context, false);

@@ -4,6 +4,10 @@ import 'dart:convert';
 import 'getVideo.dart';
 import 'videoScreen.dart';
 
+const PRIMARY_COLOR = 0xFF2F3B48;
+const SECONDARY_COLOR = 0xFFFDF5EB;
+const BUTTON_GREEN = 0xFF00C475;
+
 class StatusTile extends StatefulWidget {
   final String taskText;
   String timeDone;
@@ -71,16 +75,19 @@ class _StatusTileState extends State<StatusTile> {
       return [Column(children: [ButtonBar(
         children: [
           TextButton(
+            style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
             onPressed: () {
               widget.remove();
             },
             child: Icon(Icons.delete_forever)),
           TextButton(
+            style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
             onPressed: () {
               setVideo(!displayVideo);
             },
-            child: Icon(Icons.camera_alt)),
+            child: widget.videoPath == "" ? Icon(Icons.camera_alt) : Icon(Icons.play_arrow)),
             TextButton(
+              style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
               onPressed: () {
                 setVideo(false);
                 widget.videoPath = "";
@@ -99,11 +106,13 @@ class _StatusTileState extends State<StatusTile> {
       return [ButtonBar(
           children: [
             TextButton(
+              style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
                 onPressed: () {
                   widget.remove();
                 },
                 child: Icon(Icons.delete_forever)),
             TextButton(
+              style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
                 onPressed: () {
                   if (widget.videoPath == "") {
                     updateVideo(widget.taskText);
@@ -112,8 +121,9 @@ class _StatusTileState extends State<StatusTile> {
                   }
                   
                 },
-                child: Icon(Icons.camera_alt)),
+                child: widget.videoPath == "" ? Icon(Icons.camera_alt) : Icon(Icons.play_arrow)),
             TextButton(
+              style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Color(BUTTON_GREEN))),
                 onPressed: () {
                   setVideo(false);
                   widget.videoPath = "";
@@ -131,10 +141,13 @@ class _StatusTileState extends State<StatusTile> {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
+      iconColor: Color(SECONDARY_COLOR),
+      collapsedIconColor: Color(SECONDARY_COLOR),
+      backgroundColor: Color(PRIMARY_COLOR),
+      collapsedBackgroundColor: Color(PRIMARY_COLOR),
       key: widget.key,
-      title: Text(widget.taskText),
-      controlAffinity: ListTileControlAffinity.leading,
-      subtitle: Text(widget.timeDone),
+      title: Text(widget.taskText, style: TextStyle(color: Color(SECONDARY_COLOR)),),
+      subtitle: Text(widget.timeDone, style: TextStyle(color: Color(SECONDARY_COLOR)),),
       children: expand(),
     );
 }
