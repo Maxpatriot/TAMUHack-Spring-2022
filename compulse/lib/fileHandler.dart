@@ -1,7 +1,7 @@
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-Future read() async {
+Future<List<int>> read() async {
   final directory = await getApplicationDocumentsDirectory();
   final file = File('${directory.path}/reminder_info.txt');
   if (await file.exists()) {

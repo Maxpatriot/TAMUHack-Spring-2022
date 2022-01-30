@@ -16,78 +16,71 @@ class CheckUpApp extends StatefulWidget {
 }
 
 class _CheckUpAppState extends State<CheckUpApp> {
-  late List<int> _items = <int>[];
+  late Future<List<int>> _listFuture;
 
-  _addItem(int i) {
+  void refreshList() {
     setState(() {
-      _items.add(i);
-      print(_items);
+      _listFuture = updateList();
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    _listFuture = updateList();
+  }
+
+  Future<List<int>> updateList() async {
+    return await read();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: ThemeData(
-            primaryColor: Color(PRIMARY_COLOR),
-            backgroundColor: Color(SECONDARY_COLOR)),
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text("CheckUp"),
-          ),
-          body: FutureBuilder<dynamic>(
-              future: read(),
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                if (snapshot.hasData) {
-                  _items = snapshot.data!.toList();
-                  return ReorderableListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    children: <Widget>[
-                      for (int index = 0; index < _items.length; index++)
-                        ExpansionTile(
-                          key: Key('$index'),
-                          title: Text('Item ${_items[index]}'),
-                        ),
-                    ],
-                    onReorder: (int oldIndex, int newIndex) {
-                      setState(() {
-                        if (oldIndex < newIndex) {
-                          newIndex -= 1;
-                        }
-                        final int item = _items.removeAt(oldIndex);
-                        _items.insert(newIndex, item);
-                      });
-                      write(_items);
-                    },
+    return FutureBuilder<List<int>>(
+        future: _listFuture,
+        builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return MaterialApp(
+                home: Scaffold(
+                  appBar: AppBar(
+                    title: Text("CheckUp"),
+                  ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => {},
+                tooltip: "Add Item",
+                child: const Icon(Icons.add),
+              ),
+            ));
+          }
+          final List<int> items = snapshot.data!.toList();
+          return MaterialApp(
+            theme: ThemeData(
+                primaryColor: Color(PRIMARY_COLOR),
+                backgroundColor: Color(SECONDARY_COLOR)),
+            home: Scaffold(
+              appBar: AppBar(
+                title: const Text("CheckUp"),
+              ),
+              body: ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    key: Key('$index'),
+                    title: Text("List $index"),
                   );
-                } else {
-                  return ReorderableListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    children: <Widget>[
-                      for (int index = 0; index < _items.length; index++)
-                        ListTile(
-                          key: Key('$index'),
-                          title: Text('Item ${_items[index]}'),
-                        ),
-                    ],
-                    onReorder: (int oldIndex, int newIndex) {
-                      setState(() {
-                        if (oldIndex < newIndex) {
-                          newIndex -= 1;
-                        }
-                        final int item = _items.removeAt(oldIndex);
-                        _items.insert(newIndex, item);
-                      });
-                      write(_items);
-                    },
-                  );
-                }
-              }),
-          floatingActionButton: FloatingActionButton(
-            onPressed: _addItem(1),
-            tooltip: "Add Item",
-            child: const Icon(Icons.add),
-          ),
-        ));
+                },
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  items.add(1);
+                  write(items);
+                  refreshList();
+                },
+                tooltip: "Add Item",
+                child: const Icon(Icons.add),
+              ),
+            ),
+          );
+        });
   }
 }
