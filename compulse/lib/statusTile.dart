@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class StatusTile extends StatefulWidget {
   final String taskText;
@@ -7,12 +8,23 @@ class StatusTile extends StatefulWidget {
   bool isDone;
   String videoPath;
   Key key;
-  VoidCallback update;
+  Function delete;
 
-  StatusTile({required this.taskText, required this.isDone, required this.key, required this.timeDone, required this.videoPath, required this.update});
+  
+  
+
+  StatusTile({required this.taskText, required this.isDone, required this.key, required this.timeDone, required this.videoPath, required this.delete});
+
+  void remove() {
+    delete(this);
+  }
 
   @override
   _StatusTileState createState() => _StatusTileState();
+
+  Map<String, String> str() {
+    return <String, String>{"taskText": taskText, "timeDone": timeDone, "isDone": isDone.toString(), "videoPath": videoPath};
+  }
 }
 
 class _StatusTileState extends State<StatusTile> {
@@ -44,12 +56,11 @@ class _StatusTileState extends State<StatusTile> {
       children: [
         ButtonBar(
           children: [
-            TextButton(onPressed: () {}, child: Icon(Icons.delete_forever)),
+            TextButton(onPressed: () {widget.remove();}, child: Icon(Icons.delete_forever)),
             TextButton(onPressed: () {}, child: Icon(Icons.camera_alt)),
             TextButton(onPressed: () {
               DateTime d = DateTime.now();
               updateTime("Last completed on ${d.month}/${d.day}/${d.year} at ${d.hour}:${d.minute}");
-              widget.update;
             }, child: Icon(Icons.check)),
           ],
           alignment: MainAxisAlignment.center,
@@ -57,4 +68,6 @@ class _StatusTileState extends State<StatusTile> {
       ],
     );
   }
+
+  
 }

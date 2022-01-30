@@ -18,7 +18,14 @@ class CheckUpApp extends StatefulWidget {
 
 class _CheckUpAppState extends State<CheckUpApp> {
   int i = 0;
-  late Future<List<Map<String, String>>> _listFuture;
+  late Future<List<StatusTile>> _listFuture;
+
+  void removeItemList(StatusTile t) async {
+    List<StatusTile> s = await _listFuture;
+    s.remove(t);
+    write(s);
+    refreshList();
+  }
 
   void refreshList() {
     setState(() {
@@ -32,65 +39,67 @@ class _CheckUpAppState extends State<CheckUpApp> {
     _listFuture = updateList();
   }
 
-  Future<List<Map<String, String>>> updateList() async {
-    return await read();
+  Future<List<StatusTile>> updateList() async {
+    return await read(removeItemList);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, String>>>(
+    return FutureBuilder<List<StatusTile>>(
         future: _listFuture,
-        builder: (BuildContext context, AsyncSnapshot<List<Map<String, String>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<StatusTile>> snapshot) {
+          if (snapshot.hasData) {
+            final List<StatusTile> items = snapshot.data!.toList();
             return MaterialApp(
-                home: Scaffold(
-                  appBar: AppBar(
-                    title: Text("CheckUp"),
-                  ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () => {},
-                tooltip: "Add Item",
-                child: const Icon(Icons.add),
-              ),
-            ));
-          }
-          final List<Map<String, String>> items = snapshot.data!.toList();
-          return MaterialApp(
-            theme: ThemeData(
-                primaryColor: Color(PRIMARY_COLOR),
-                backgroundColor: Color(SECONDARY_COLOR)),
-            home: Scaffold(
-              appBar: AppBar(
-                title: const Text("CheckUp"),
-              ),
-              body: ReorderableListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  //return ListTile(key: Key(items[index]["taskText"]!), title: Text(items[index]["taskText"]!),);
-                  return StatusTile(key: Key(items[index]["taskText"]!), taskText: items[index]["taskText"]!, isDone: items[index]["isDone"]!.toLowerCase() == 'true', timeDone: items[index]["timeDone"]!, videoPath: items[index]["video"]!, update: refreshList,);
-
-                },
-                onReorder: (int oldIndex, int newIndex) {
-                    if (oldIndex < newIndex) {
-                      newIndex -= 1;
-                    }
-                    final Map<String, String> item = items.removeAt(oldIndex);
-                    items.insert(newIndex, item);
+              theme: ThemeData(
+                  primaryColor: Color(PRIMARY_COLOR),
+                  backgroundColor: Color(SECONDARY_COLOR)),
+              home: Scaffold(
+                appBar: AppBar(
+                  title: const Text("CheckUp"),
+                ),
+                body: ReorderableListView(
+                    children: items,
+                    onReorder: (int oldIndex, int newIndex) {
+                      if (oldIndex < newIndex) {
+                        newIndex -= 1;
+                      }
+                      final StatusTile item = items.removeAt(oldIndex);
+                      items.insert(newIndex, item);
+                      write(items);
+                    }),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    items.add(StatusTile(
+                      isDone: false,
+                      key: Key("Lock Car $i"),
+                      taskText: "Lock Car $i",
+                      videoPath: "",
+                      timeDone: "You have not done this yet",
+                      delete: removeItemList,
+                    ));
+                    i++;
                     write(items);
-                }
+                    refreshList();
+                  },
+                  tooltip: "Add Item",
+                  child: const Icon(Icons.add),
+                ),
               ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  items.add({"taskText": "Lock Car $i", "timeDone": "You have not done this", "isDone": "false", "video": ""});
-                  i++;
-                  write(items);
-                  refreshList();
-                },
-                tooltip: "Add Item",
-                child: const Icon(Icons.add),
-              ),
+            );
+          }
+          return MaterialApp(
+              home: Scaffold(
+            appBar: AppBar(
+              title: Text("CheckUp"),
             ),
-          );
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => {},
+              tooltip: "Add Item",
+              child: const Icon(Icons.add),
+            ),
+          ));
         });
   }
 }
