@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+import 'package:compulse/getFile.dart';
 import 'package:flutter/material.dart';
 
 class StatusTile extends StatefulWidget {
@@ -9,7 +9,13 @@ class StatusTile extends StatefulWidget {
   Key key;
   VoidCallback update;
 
-  StatusTile({required this.taskText, required this.isDone, required this.key, required this.timeDone, required this.videoPath, required this.update});
+  StatusTile(
+      {required this.taskText,
+      required this.isDone,
+      required this.key,
+      required this.timeDone,
+      required this.videoPath,
+      required this.update});
 
   @override
   _StatusTileState createState() => _StatusTileState();
@@ -22,10 +28,12 @@ class _StatusTileState extends State<StatusTile> {
     });
   }
 
-  void updateVideo(String x) {
+  void updateVideo(String x) async {
+    String s = await recordToDisk(x);
     setState(() {
-      widget.videoPath = x;
+      widget.videoPath = s;
     });
+    debugPrint(widget.videoPath);
   }
 
   void updateIsDone(bool b) {
@@ -44,13 +52,21 @@ class _StatusTileState extends State<StatusTile> {
       children: [
         ButtonBar(
           children: [
-            TextButton(onPressed: () {}, child: Icon(Icons.delete_forever)),
-            TextButton(onPressed: () {}, child: Icon(Icons.camera_alt)),
-            TextButton(onPressed: () {
-              DateTime d = DateTime.now();
-              updateTime("Last completed on ${d.month}/${d.day}/${d.year} at ${d.hour}:${d.minute}");
-              widget.update;
-            }, child: Icon(Icons.check)),
+            TextButton(
+                onPressed: () {}, child: const Icon(Icons.delete_forever)),
+            TextButton(
+                onPressed: () {
+                  updateVideo(widget.taskText);
+                },
+                child: const Icon(Icons.camera_alt)),
+            TextButton(
+                onPressed: () {
+                  DateTime d = DateTime.now();
+                  updateTime(
+                      "Last completed on ${d.month}/${d.day}/${d.year} at ${d.hour}:${d.minute}");
+                  widget.update;
+                },
+                child: const Icon(Icons.check)),
           ],
           alignment: MainAxisAlignment.center,
         )
